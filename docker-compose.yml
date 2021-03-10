@@ -1,0 +1,53 @@
+version: '3'
+
+networks:
+  native:
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    working_dir: /usr/src/app
+    container_name: nginx_native
+    ports:
+      - "8088:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - native
+
+  mysql:
+    image: mysql:5.7.22
+    container_name: mysql_native
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "4306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    environment:
+      MYSQL_DATABASE: films_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - native
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php_native
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "9000:9000"
+    networks:
+      - native

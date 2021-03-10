@@ -1,0 +1,19 @@
+<h1>Classrooms</h1>
+
+<table style="border: 1px">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Is Active</th>
+        <th>Date Created</th>
+    </tr>
+    {% for classroom in classrooms %}
+        <tr>
+            <td>{{ classroom.id|e }}</td>
+            <td>{{ classroom.name|e }}</td>
+            <td>{{ classroom.isActive ? 'Yes':'No'  }}</td>
+            <td>{{ classroom.dateCreated|date("m/d/Y") }}</td>
+        </tr>
+    {% endfor %}
+
+</table>
